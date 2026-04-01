@@ -1,35 +1,39 @@
-from http.server import BaseHTTPRequestHandler
 from groq import Groq
 import json
+import os
 
-client = Groq(api_key="GROQ_API_KEY")
-
-class handler(BaseHTTPRequestHandler):
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.end_headers()
-
-    def do_POST(self):
-        length = int(self.headers['Content-Length'])
-        body = json.loads(self.rfile.read(length))
-        messages = body.get('messages', [])
-
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=[{
-                "role": "system",
-                "content": "তুমি একজন helpful AI assistant। বাংলায় উত্তর দাও।"
-            }] + messages,
-            max_tokens=1000
+def handler(request):
+    # OPTIONS request handle করো
+    if request.method == "OPTIONS":
+        return Response(
+            "",
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            }
         )
 
-        reply = response.choices[0].message.content
+    body = json.loads(request.body)
+    messages = body.get("messages", [])
 
-        self.send_response(200)
-        self.send_header('Content-Type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps({"reply": reply}).encode())
+    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{
+            "role": "system",
+            "content": "তুমি একজন helpful AI assistant। বাংলায় উত্তর দাও।"
+        }] + messages,
+        max_tokens=1000
+    )
+
+    reply = response.choices[0].message.content
+
+    return Response(
+        json.dumps({"reply": reply}),
+        headers={
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        }
+    )
