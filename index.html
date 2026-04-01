@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Chatboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- যেকোনো page content এখানে থাকবে -->
+  <div style="padding:40px; font-family:Arial;">
+    <h1>আমার Website</h1>
+    <p>এই page-এ যা খুশি রাখো। নিচে ডানদিকে AI button দেখবে।</p>
+  </div>
+
+  <!-- Floating AI Button -->
+  <button id="chatToggleBtn" onclick="toggleChat()">
+    🤖
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="avatar">🤖</div>
+      <div class="hinfo">
+        <div class="name">AI Assistant</div>
+        <div class="status">● Online</div>
+      </div>
+      <button onclick="toggleDark()" id="darkBtn"
+        style="background:transparent; border:1px solid #ddd;
+               border-radius:8px; padding:4px 10px;
+               font-size:12px; cursor:pointer; margin-left:auto;">🌙</button>
+      <button onclick="clearHistory()"
+        style="background:transparent; border:1px solid #ddd;
+               color:#888; border-radius:8px; padding:4px 10px;
+               font-size:12px; cursor:pointer; margin-left:8px;">🗑</button>
+      <!-- Close button -->
+      <button onclick="toggleChat()"
+        style="background:transparent; border:none;
+               font-size:20px; cursor:pointer;
+               margin-left:8px; color:#888; line-height:1;">×</button>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages" id="messages">
+      <div class="empty" id="empty">
+        <div class="empty-icon">💬</div>
+        <div class="empty-text">কিছু লিখে পাঠাও!</div>
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+      <button id="micBtn" onclick="toggleVoice()"
+        style="width:38px; height:38px; border-radius:50%;
+               background:#f0f0f0; border:1px solid #ddd;
+               font-size:16px; cursor:pointer; flex-shrink:0;">🎤</button>
+      <textarea id="input" placeholder="এখানে লেখো..." rows="1"></textarea>
+      <button id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
