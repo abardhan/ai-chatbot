@@ -1,37 +1,43 @@
-import os
 from groq import Groq
-from dotenv import load_dotenv
-from http.server import BaseHTTPRequestHandler
 import json
+import os
+from dotenv import load_dotenv
 
 load_dotenv()
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
-class handler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers['Content-Length'])
-        body = self.rfile.read(content_length)
-        data = json.loads(body)
-
-        user_message = data.get("message", "")
-
-        chat_completion = client.chat.completions.create(
-            messages=[{"role": "user", "content": user_message}],
-            model="llama3-8b-8192",
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+def handler(request):
+    # OPTIONS request handle করো
+    if request.method == "OPTIONS":
+        return Response(
+            "",
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            }
         )
 
-        response_text = chat_completion.choices[0].message.content
+    body = json.loads(request.body)
+    messages = body.get("messages", [])
 
-        self.send_response(200)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps({"response": response_text}).encode())
+    client = Groq(api_key=os.environ.get(GROQ_API_KEY))
 
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
-        self.end_headers()
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{
+            "role": "system",
+            "content": "তুমি একজন helpful AI assistant। বাংলায় উত্তর দাও।"
+        }] + messages,
+        max_tokens=1000
+    )
+
+    reply = response.choices[0].message.content
+
+    return Response(
+        json.dumps({"reply": reply}),
+        headers={
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+        }
+    )
