@@ -1,7 +1,11 @@
 from groq import Groq
 import json
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 def handler(request):
     # OPTIONS request handle করো
     if request.method == "OPTIONS":
@@ -17,7 +21,7 @@ def handler(request):
     body = json.loads(request.body)
     messages = body.get("messages", [])
 
-    client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+    client = Groq(api_key=os.environ.get(GROQ_API_KEY))
 
     response = client.chat.completions.create(
         model="llama-3.3-70b-versatile",

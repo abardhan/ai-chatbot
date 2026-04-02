@@ -63,9 +63,7 @@ async function sendMessage() {
 
   try {
 
-const API_URL = window.location.hostname === 'localhost'
-  ? 'http://127.0.0.1:5000/chat'   // local development
-  : '/api/chat';                     // Vercel production
+const API_URL = window.location.hostname === 'localhost'? 'http://127.0.0.1:5000/chat': '/api/chat';                     
 
 
     const response = await fetch(API_URL, {

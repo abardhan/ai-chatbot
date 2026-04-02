@@ -1,12 +1,18 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from groq import Groq
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 app = Flask(__name__)
 CORS(app, origins="*")
 
 # Groq API Key এখানে বসাও
-client = Groq(api_key="GROQ_API_KEY")
+client = Groq(api_key=GROQ_API_KEY)
 
 @app.route('/')
 def home():
